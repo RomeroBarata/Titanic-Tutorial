@@ -2,9 +2,9 @@
 library(readr)         # Importar/exportar dados
 library(dplyr)         # Manipular os dados de forma eficiente
 library(stringr)       # Manipular strings e regex
-library(ggplot2)       # Gerar gráficos de alta qualidade
 library(rpart)         # Árvores de decisão
 library(randomForest)  # Florestas aleatórias
+library(caret)         # Criação de modelos preditivos
 
 ## Definindo constantes --------------------------------------------------------
 DATA_PATH <- "data"
@@ -78,3 +78,22 @@ rf1 <- randomForest(Survived ~ Sex + Age,
                     importance = TRUE)
 
 ## caret -----------------------------------------------------------------------
+fit_control <- trainControl(method = "repeatedcv",  # k-fold cv
+                            number = 10,            # 10 folds
+                            repeats = 5)            # 5 repetições
+
+set.seed(10345)
+rf_fit <- train(Survived ~ Sex + Age + Pclass + Fare + Embarked + Title, 
+                data = tit_train, 
+                method = "rf", 
+                ntree = 100, 
+                metric = "Accuracy", 
+                trControl = fit_control, 
+                tuneLength = 3)
+
+rf_preds <- predict(rf_fit, newdata = tit_test)
+
+## Exportar as predições para submissão ----------------------------------------
+kaggle_sub <- data_frame(PassengerId = tit_test$PassengerId, 
+                         Survived = rf_preds)
+write_csv(kaggle_sub, path = "submissions/my-sub-01.csv")
