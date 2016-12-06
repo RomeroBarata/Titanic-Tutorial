@@ -1,5 +1,6 @@
 ## Importando os pacotes necessários -------------------------------------------
 library(readr)         # Importar/exportar dados
+library(tidyr)         # Organizar/Limpar dados
 library(dplyr)         # Manipular os dados de forma eficiente
 library(stringr)       # Manipular strings e regex
 library(rpart)         # Árvores de decisão
@@ -67,12 +68,12 @@ prop.table(survival_sex, 1)
 prop.table(survival_sex, 2)
 
 ## Árvores de decisão ----------------------------------------------------------
-tree1 <- rpart(Survived ~ Sex + Age + Title, 
+tree1 <- rpart(Survived ~ Sex + Age + Title + isChild, 
                data = tit_train, 
                method = "class")
 
 ## Florestas aleatórias --------------------------------------------------------
-rf1 <- randomForest(Survived ~ Sex + Age, 
+rf1 <- randomForest(Survived ~ Title + Age + DFare + Pclass, 
                     data = tit_train, 
                     ntree = 100, 
                     importance = TRUE)
